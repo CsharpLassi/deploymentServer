@@ -7,7 +7,7 @@ from app.routes import git_webhook
 
 @git_webhook.route('/git/hook/new', methods=['GET'])
 def new_git_hook():
-    return render_template('index.html')
+    return render_template('git/new.html')
 
 
 @git_webhook.route('/github', methods=['POST'])
