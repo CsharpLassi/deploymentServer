@@ -1,13 +1,17 @@
 import hmac
-from flask import request, jsonify, current_app, render_template
+from flask import request, jsonify, current_app, render_template, redirect
 from git import Repo
 
+from app.forms import GitHookFormNew
 from app.routes import git_webhook
 
 
-@git_webhook.route('/git/hook/new', methods=['GET'])
+@git_webhook.route('/git/hook/new', methods=['GET', 'POST'])
 def new_git_hook():
-    return render_template('git/new.html')
+    form = GitHookFormNew()
+    if form.validate_on_submit():
+        return redirect('/git/hook')
+    return render_template('git/new.html', form=form)
 
 
 @git_webhook.route('/github', methods=['POST'])
