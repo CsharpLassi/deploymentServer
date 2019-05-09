@@ -1,11 +1,11 @@
 import hmac
-from flask import request, Blueprint, jsonify, current_app
+from flask import request, jsonify, current_app
 from git import Repo
 
-webhook = Blueprint('webhook', __name__, url_prefix='')
+from app.routes import github_webhook
 
 
-@webhook.route('/github', methods=['POST', 'GET'])
+@github_webhook.route('/github', methods=['POST'])
 def handle_github_hook():
     """ Entry point for github webhook """
     signature = request.headers.get('X-Hub-Signature')

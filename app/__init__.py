@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 from config import Config
-from .webhooks import webhook
+from app.routes import github_webhook
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -20,6 +20,6 @@ def create_app(config_class=Config):
 
     from app import models
 
-    app.register_blueprint(webhook)
+    app.register_blueprint(github_webhook)
 
     return app
