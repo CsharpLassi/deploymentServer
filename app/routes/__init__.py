@@ -1,5 +1,5 @@
 from flask import Blueprint
 
-github_webhook = Blueprint('github_webhook', __name__, url_prefix='')
+git_webhook = Blueprint('git_webhook', __name__, url_prefix='')
 
-import app.routes.github
+import app.routes.git
