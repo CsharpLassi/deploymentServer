@@ -32,7 +32,7 @@ def list():
 
 @bp_git.route('/git/<hook_id>', methods=['GET', 'POST'])
 @login_required
-def edit(hook_id:int):
+def edit(hook_id: int):
     hook = GitHook.query.get(hook_id)
     form = GitHookFormEdit()
     if form.validate_on_submit():
@@ -50,16 +50,27 @@ def edit(hook_id:int):
 
 @bp_git.route('/hook/<hook_id>', methods=['POST'])
 def handle_github_hook(hook_id):
-    """ Entry point for github webhook """
-    signature = request.headers.get('X-Hub-Signature')
-    sha, signature = signature.split('=')
-
     hook = GitHook.query.get(hook_id)
+    update_repo = False
 
-    secret = str.encode(hook.secret)
+    signature = request.headers.get('X-Hub-Signature')
 
-    hashhex = hmac.new(secret, request.data, digestmod='sha1').hexdigest()
-    if hmac.compare_digest(hashhex, signature):
+    if signature:
+        sha, signature = signature.split('=')
+
+        hook = GitHook.query.get(hook_id)
+
+        secret = str.encode(hook.secret)
+
+        hashhex = hmac.new(secret, request.data, digestmod='sha1').hexdigest()
+        if hmac.compare_digest(hashhex, signature):
+            update_repo = True
+    else:
+        secret = request.json.get('secrete')
+
+        update_repo = secret is not None and secret == hook.secret
+
+    if update_repo:
         repo = Repo(hook.repo_path)
         origin = repo.remotes.origin
         origin.pull('--rebase')
