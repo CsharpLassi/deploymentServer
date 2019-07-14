@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
@@ -11,7 +12,9 @@ from config import Config
 db = SQLAlchemy()
 migrate = Migrate()
 bootstrap = Bootstrap()
+login = LoginManager()
 
+login.login_view = 'index.login'
 
 def create_app(config_class=Config):
     """ Create, configure and return the Flask application """
@@ -20,12 +23,14 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
+    login.init_app(app)
 
     bootstrap.init_app(app)
 
     from app import models
-    from app.routes import git_webhook
+    from app.routes import bp_git, bp_index
 
-    app.register_blueprint(git_webhook)
+    app.register_blueprint(bp_index)
+    app.register_blueprint(bp_git)
 
     return app

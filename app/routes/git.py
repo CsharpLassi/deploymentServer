@@ -1,15 +1,17 @@
 import hmac
 from flask import request, jsonify, current_app, render_template, redirect, url_for
+from flask_login import login_required
 from git import Repo
 
 from app import db
 from app.forms import GitHookFormNew
 from app.forms.gitHook import GitHookFormEdit
 from app.models.gitHook import GitHook
-from app.routes import git_webhook
+from app.routes import bp_git
 
 
-@git_webhook.route('/new', methods=['GET', 'POST'])
+@bp_git.route('/new', methods=['GET', 'POST'])
+@login_required
 def new():
     form = GitHookFormNew()
     if form.validate_on_submit():
@@ -20,16 +22,18 @@ def new():
     return render_template('git/new.html', form=form)
 
 
-@git_webhook.route('/', methods=['GET'])
-@git_webhook.route('/index', methods=['GET'])
+@bp_git.route('/', methods=['GET'])
+@bp_git.route('/index', methods=['GET'])
+@login_required
 def list():
     hooks = GitHook.query.all()
     return render_template('git/list.html', hooks=hooks)
 
 
-@git_webhook.route('/git/<int:id>', methods=['GET', 'POST'])
-def edit(id):
-    hook = GitHook.query.get(id)
+@bp_git.route('/git/<hook_id>', methods=['GET', 'POST'])
+@login_required
+def edit(hook_id:int):
+    hook = GitHook.query.get(hook_id)
     form = GitHookFormEdit()
     if form.validate_on_submit():
         hook.name = form.name.data
@@ -44,13 +48,13 @@ def edit(id):
     return render_template('git/edit.html', form=form, hook=hook)
 
 
-@git_webhook.route('/hook/<int:id>', methods=['POST'])
-def handle_github_hook(id):
+@bp_git.route('/hook/<hook_id>', methods=['POST'])
+def handle_github_hook(hook_id):
     """ Entry point for github webhook """
     signature = request.headers.get('X-Hub-Signature')
     sha, signature = signature.split('=')
 
-    hook = GitHook.query.get(id)
+    hook = GitHook.query.get(hook_id)
 
     secret = str.encode(hook.secret)
 
