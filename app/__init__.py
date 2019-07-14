@@ -14,6 +14,7 @@ migrate = Migrate()
 bootstrap = Bootstrap()
 login = LoginManager()
 
+login.login_view = 'index.login'
 
 def create_app(config_class=Config):
     """ Create, configure and return the Flask application """
@@ -27,8 +28,9 @@ def create_app(config_class=Config):
     bootstrap.init_app(app)
 
     from app import models
-    from app.routes import git_webhook
+    from app.routes import bp_git, bp_index
 
-    app.register_blueprint(git_webhook)
+    app.register_blueprint(bp_index)
+    app.register_blueprint(bp_git)
 
     return app
