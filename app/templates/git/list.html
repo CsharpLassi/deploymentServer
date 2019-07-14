@@ -21,7 +21,7 @@
                       {% for hook in hooks %}
                           <tr>
                             <th scope="col">{{ hook.id }}</th>
-                            <th scope="col"><a href="{{ url_for('git.edit', id=hook.id) }}">{{ hook.name }}</a></th>
+                            <th scope="col"><a href="{{ url_for('git.edit', hook_id=hook.id) }}">{{ hook.name }}</a></th>
                             <th scope="col"></th>
                           </tr>
                       {% endfor %}

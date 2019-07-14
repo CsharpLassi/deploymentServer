@@ -18,7 +18,7 @@ def new():
         hook = GitHook(name=form.name.data, secret=form.secret.data, repo_path=form.repo_path.data)
         db.session.add(hook)
         db.session.commit()
-        return redirect(url_for('git.edit', id=hook.id))
+        return redirect(url_for('git.edit', hook_id=hook.id))
     return render_template('git/new.html', form=form)
 
 
@@ -44,7 +44,7 @@ def edit(hook_id:int):
     form.name.data = hook.name
     form.secret.data = hook.secret
     form.repo_path.data = hook.repo_path
-    form.url.data = url_for('git.handle_github_hook', id=hook.id, _external=True)
+    form.url.data = url_for('git.handle_github_hook', hook_id=hook.id, _external=True)
     return render_template('git/edit.html', form=form, hook=hook)
 
 
