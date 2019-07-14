@@ -58,8 +58,6 @@ def handle_github_hook(hook_id):
     if signature:
         sha, signature = signature.split('=')
 
-        hook = GitHook.query.get(hook_id)
-
         secret = str.encode(hook.secret)
 
         hashhex = hmac.new(secret, request.data, digestmod='sha1').hexdigest()
