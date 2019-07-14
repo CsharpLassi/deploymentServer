@@ -2,7 +2,8 @@ from flask import url_for, flash, render_template
 from flask_login import current_user, login_user, logout_user
 from werkzeug.utils import redirect
 
-from app.forms.user import LoginForm
+from app import db
+from app.forms.user import LoginForm, RegistrationForm
 from app.models.user import User
 from app.routes import bp_index
 
@@ -31,4 +32,23 @@ def login():
 @bp_index.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('index.index'))
+
+
+@bp_index.route('/register', methods=['GET', 'POST'])
+def register():
+    if User.query.count() > 0:
+        flash('Too many users')
+        return redirect(url_for('index.login'))
+
+    if current_user.is_authenticated:
+        return redirect(url_for('index.index'))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Congratulations, you are now a registered user!')
+        return redirect(url_for('index.login'))
+    return render_template('register.html', title='Register', form=form)
