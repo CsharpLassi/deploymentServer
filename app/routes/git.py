@@ -64,7 +64,7 @@ def handle_github_hook(hook_id):
         if hmac.compare_digest(hashhex, signature):
             update_repo = True
     else:
-        secret = request.json.get('secrete')
+        secret = request.json.get('secret')
 
         update_repo = secret is not None and secret == hook.secret
 
