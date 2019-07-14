@@ -16,6 +16,7 @@ def new():
         hook = GitHook(name=form.name.data, secret=form.secret.data, repo_path=form.repo_path.data)
         db.session.add(hook)
         db.session.commit()
+        return redirect(url_for('git.edit', id=hook.id))
     return render_template('git/new.html', form=form)
 
 
