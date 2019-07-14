@@ -1,0 +1,20 @@
+{%  extends "index.template.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+{%  block content %}
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <div class="col-md-auto">
+                <div class="card">
+                <div class="card-header">
+                    New Deployment Hook
+                </div>
+                <div class="card-body">
+                    {{ wtf.quick_form(form)  }}
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

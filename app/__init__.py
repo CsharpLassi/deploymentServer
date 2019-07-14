@@ -1,14 +1,31 @@
 import os
 from flask import Flask
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 
-from .webhooks import webhook
+from flask_bootstrap import Bootstrap
+
+from config import Config
 
 
-def create_app():
+db = SQLAlchemy()
+migrate = Migrate()
+bootstrap = Bootstrap()
+
+
+def create_app(config_class=Config):
     """ Create, configure and return the Flask application """
     app = Flask(__name__)
-    app.config['GITHUB_SECRET'] = os.environ.get('GITHUB_SECRET')
-    app.config['REPO_PATH'] = os.environ.get('REPO_PATH')
-    app.register_blueprint(webhook)
+    app.config.from_object(config_class)
+
+    db.init_app(app)
+    migrate.init_app(app, db)
+
+    bootstrap.init_app(app)
+
+    from app import models
+    from app.routes import git_webhook
+
+    app.register_blueprint(git_webhook)
 
     return app
